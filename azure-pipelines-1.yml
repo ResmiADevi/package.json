@@ -4,7 +4,7 @@ jobs:
 - job: BuildNodeJsContainerApp
   displayName: Build Node.js Container Image
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'macos-latest'
   steps:
   - checkout: self
   - task: Docker@2
