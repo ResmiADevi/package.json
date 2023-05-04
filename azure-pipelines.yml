@@ -4,19 +4,30 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+  branches:
+    include:
+      - master  # Replace with your main branch name
 
-pool:
-  vmImage: ubuntu-latest
+jobs:
+  - job: BuildAndPush
+    displayName: 'Build and Push Docker Image'
+    pool:
+      vmImage: 'macOS-10.15'
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '14.x'
+        displayName: 'Install Node.js'
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+      - script: |
+          npm ci
+          npm run build
+        displayName: 'Build Node.js Application'
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
-              
+      - task: Docker@2
+        inputs:
+          command: 'buildAndPush'
+          containerRegistry: 'ACR' 
+          repository: 'your-image-name'
+          tags: '$(Build.SourceVersion)'
+        displayName: 'Build and Push Docker Image'
